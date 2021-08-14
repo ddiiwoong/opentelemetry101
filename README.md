@@ -10,13 +10,20 @@ _class:
  - invert
 -->
 
-# Marp Action for GitHub
+# Getting Started with OpenTelemetry 
 
-Presentations to Webpages: Instantly!
+NexCloud 김진웅
 
-## What?
+## What is Observability?
 
-[Marp](https://marp.app/) lets you create slides from markdown (like this!).
+Observability(관측가능성, 관찰가능성)은 시스템의 속성을 자세히 설명하는데 사용하는 용어  
+Observability System을 통해 시스템과 애플리케이션에서 발생하는 문제를 파악  
+Observability 구성요소 : Logs, Metrics, Traces 
+
+## What is OpenTelemetry
+
+### [OpenTelemetry](https://opentelemetry.io/) 
+
 
 [Marp Action](https://github.com/ralexander-phi/marp-action) lets you automatically deploy your presentation to [GitHub Pages](https://pages.github.com/).
 
