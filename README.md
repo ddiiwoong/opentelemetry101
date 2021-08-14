@@ -18,9 +18,18 @@ NexCloud 김진웅
 
 Observability(관측가능성, 관찰가능성)은 시스템의 속성을 자세히 설명하는데 사용하는 용어  
 Observability System을 통해 시스템과 애플리케이션에서 발생하는 문제를 파악  
-Observability 구성요소 : Logs, Metrics, Traces 
+Observability 기본 구성요소 : Logs, Metrics, Traces 
 
-## What is OpenTelemetry
+## What is OpenTelemetry?
+
+![](img/otel.png) 
+
+[OpenCensus with Prometheus and Kubernetes](https://www.slideshare.net/JinwoongKim8/opencensus-with-prometheus-and-kubernetes) 
+
+
+Observability에 필요한 telemetry 데이터인 Logs, Metrics, Traces 를 계측(instrumentation)하고 내보내기(export)를 담당하는 specification이자 SDK set.
+
+제공되는 라이브러리를 사용해서 공급업체 중립적인 방식으로 여러 아키텍처에 대한 애플리케이션을 계측
 
 ### [OpenTelemetry](https://opentelemetry.io/) 
 
