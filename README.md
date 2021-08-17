@@ -94,6 +94,10 @@ Observability에 필요한 telemetry 데이터(Logs, Metrics, Traces)를 계측(
 ![width:700px](img/propagation.png) 
 
 ## Trace, Span
+
+서비스 요청에 대한 애플리케이션 또는 서비스 구조 확인
+모든 서비스들 간 데이터 흐름을 시각화하여 아키텍처상의 병목 현상을 파악 
+
 **Trace** in OpenTelemetry are defined implicitly by their Spans
 **Span** represents an operation within a transaction.
 
@@ -112,8 +116,8 @@ Compatible with all **OpenCensus** Client Libraries.
 ## Glossary
 - **Signal** : categories of telemetry (Metrics, logs, traces, and baggage)
 - **Context** : context 제공 (W3C trace-context, B3, AWS X-Ray, etc)
-- **Context Propagation**
-- **Cross-cutting concern**
+- **Context Propagation** : 서비스간 Trace, Span, Flags 등 전달 규약
+- **Cross-cutting concern** : 횡단 관심사 ()
 
 https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/glossary.md
 
@@ -127,14 +131,19 @@ https://github.com/open-telemetry/opentelemetry-specification/blob/main/specific
 
 ## Client Architecture
 
-![width:960px](img/agent_type.svg)
+#### Client Types
+![width:850px](img/agent_type.svg)
 
+#### Client Data Pipeline
+![width:800px](img/client.png)
 
 ## Collector Architecture
 
-![width:650px](img/collector.png)
+![width:700px](img/collector.png)
 
-## Data Architecture
+## Traces & Sampling
+
+
 
 
 
