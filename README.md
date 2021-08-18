@@ -127,7 +127,11 @@ https://github.com/open-telemetry/opentelemetry-specification/blob/main/specific
 - **Spans** : "call" in a trace (Kind, Attributes, Events, Links)
 - **Sampler** : always, probabilistic, etc.
 - **Span Processor** : simple, batch, etc.
-- **Expoter** : OTLP, Jaeger, Prometheus, etc.
+- **Expoter** : OTLP(OpenTelemetry protocol), Jaeger, Prometheus, etc.
+
+- API: Used to generate telemetry data. Defined per data source as well as for other aspects including baggage and propagators.
+- SDK: Implementation of the API with processing and exporting capabilities. Defined per data source as well as for other aspects including resources and configuration.
+- Data: Defines semantic conventions to provide vendor-agnostic implementations as well as the OpenTelemetry protocol (OTLP).
 
 ## Client Architecture
 
@@ -144,24 +148,41 @@ https://github.com/open-telemetry/opentelemetry-specification/blob/main/specific
 ## Traces & Sampling
 
 
+span과 메트릭에 key=value를 추가하게 되는데 이는 데이터를 수집하는데 있어서 비용 문제를 발생시킴
+
+그래서 샘플링이 필요하고 Sampling은 데이터를 수집, 분석하는 비용을 낮춰준다. 
+
+하지만 biased sample, too-small sample 등 문제가 발생할 여지가 있기 때문에 이런 문제를 해결하기 위해서는 sampling rate 개념을 적용해서 특정 비율을 데이터를 수집하여 처리를 한다.
+
+예전에 opencensus에는 Always, Never, Probabilistic, RateLimiting 이렇게 있었는데 
+opentelemetry에는 확인이 필요함
+
+## Traces & Sampling
+
+화면과 정의
 
 
+## Why you need OpenTelemetry and what it can do
+
+- A single, vendor-agnostic instrumentation library per language with support for both automatic and manual instrumentation.
+- A single collector binary that can be deployed in a variety of ways including as an agent or gateway.
+- Send data to multiple destinations in parallel through configuration.
+- Open-standard semantic conventions to ensure vendor-agnostic data collection
+- The ability to support multiple context propagation formats in parallel to assist with migrating as standards evolve.
+- With support for a variety of open-source and commercial protocols
+- Easy to adopt OpenTelemetry.(If you have experienced OpenTracing and OpenCensus projects)
 
 
+## What OpenTelemetry is not 
 
+- OpenTelemetry is not an observability back-end like Jaeger or Prometheus. 
+- Instead, it supports exporting data to a variety of open-source and commercial back-ends. 
+- It provides a pluggable architecture so additional technology protocols and formats can be easily added.
 
 
 
 ## Specification
 
-| Traces | Metrics |
-| --- | --- |
-| **Context** : W3C trace-context, B3, etc | **Context** span and correlation |
-| **Context** : W3C trace-context, B3, etc | **Context** span and correlation |
-| **Context** : W3C trace-context, B3, etc | **Context** span and correlation |
-| **Context** : W3C trace-context, B3, etc | **Context** span and correlation |
-| **Context** : W3C trace-context, B3, etc | **Context** span and correlation |
-| **Context** : W3C trace-context, B3, etc | **Context** span and correlation |
-| **Context** : W3C trace-context, B3, etc | **Context** span and correlation |
-
-https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/overview.md
+- API: Used to generate telemetry data. Defined per data source as well as for other aspects including baggage and propagators.
+- SDK: Implementation of the API with processing and exporting capabilities. Defined per data source as well as for other aspects including resources and configuration.
+- Data: Defines semantic conventions to provide vendor-agnostic implementations as well as the OpenTelemetry protocol (OTLP).
