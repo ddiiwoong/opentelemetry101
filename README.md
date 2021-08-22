@@ -44,7 +44,9 @@ NexCloud 김진웅
 
 시스템의 프로세스에서 특정 부분의 지연(latency)을 알려주는 원격 측정(telemetry)방법
 
-마이크로 서비스 환경에서 지연 병목을 찾아내는 도구
+요청(Requests)이 마이크로서비스 및 서버리스 아키텍처를 통해 전파될때 이동하는 경로를 기록
+
+마이크로서비스 환경같은 최신 아키텍처에서 수많은 구성 요소간의 종속성과 관계를 측정하고 지연 병목을 찾아내는 도구이기 때문에 Observability에서 매우 중요
 
 ## OpenCensus + OpenTracing = OpenTelemetry
 
