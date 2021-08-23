@@ -72,7 +72,7 @@ Observability에 필요한 telemetry 데이터(Logs, Metrics, Traces)를 계측(
 
 ## Ecosystem
 
-- Support Language - Go, Ruby, C++, Rus, PHP, JavaScript, Java, etc...
+- Support Language - Go, Ruby, C++, Rus, PHP, JavaScript, Java, Python, etc...
 - Ecosystem - Jaeger, Fluentbit, Prometheus, Kubernetes
 - Communities
   - CSP: Azure, GCP, AWS
@@ -111,7 +111,7 @@ span context 이외에도 뒤에서 설명할 trace와 span의 parent 식별자(
 
 ## Span in opentelemetry
 
-* Attribute : key-value pairs (filter 할 모든 데이터 예: customer identifier, process hostname)
+* Attribute : can be added freely key-value pairs (filter 할 모든 데이터 예: customer identifier, process hostname)
 * Event : time-stamped string that can be attached to a span
 
 ## Context Propagation
