@@ -91,17 +91,15 @@ Observability에 필요한 telemetry 데이터(Logs, Metrics, Traces)를 계측(
 
 ![width:600px](img/microservices.png) 
 
-## Traces
+## Traces & Spans
 
 서비스 요청에 대한 애플리케이션 또는 서비스 구조 확인하고, 모든 서비스들 간 데이터 흐름을 시각화하여 아키텍처상의 병목 현상을 파악 
 
-![width:750px](img/spans-traces.png)
+![width:800px](img/span.png)
 
 ## Spans
 
-![width:750px](img/span.png)
-
-span의 핵심 기능은 호스트의 정보를 캡슐화하는것이다.  
+- span의 핵심 기능은 호스트의 정보를 캡슐화하는것이다. 
 
 OpenTelemetry에서 span은 다양한 정보(timestamp, events, attributes, links, status)를 캡슐화(encapsulate).
 
