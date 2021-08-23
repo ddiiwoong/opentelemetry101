@@ -37,16 +37,18 @@ NexCloud 김진웅
 
 #### Observability(관측가능성, 관찰가능성)
 * 시스템의 속성을 자세히 설명하는데 사용하는 용어  
+
 * System을 통해 시스템과 애플리케이션에서 발생하는 문제를 파악  
+
 * 원격측정(Telemetry) Data : Logs, Metrics, Traces 
 
-## Distributed Trace
+## Distributed Trace (분산 추적)
 
-시스템의 프로세스에서 특정 부분의 지연(latency)을 알려주는 원격 측정(telemetry)방법
+* 시스템의 프로세스에서 특정 부분의 지연(latency)을 알려주는 원격 측정(telemetry)방법
 
-요청(Requests)이 마이크로서비스 및 서버리스 아키텍처를 통해 전파될때 이동하는 경로를 기록
+* 요청(Requests)이 마이크로서비스 및 서버리스 아키텍처를 통해 전파될때 이동하는 경로를 기록
 
-마이크로서비스 환경같은 최신 아키텍처에서 수많은 구성 요소간의 종속성과 관계를 측정하고 지연 병목을 찾아내는 도구이기 때문에 Observability에서 매우 중요
+* 마이크로서비스 환경같은 최신 아키텍처에서 수많은 구성 요소간의 종속성과 관계를 측정하고 지연 병목을 찾아내는 도구이기 때문에 Observability에서 매우 중요
 
 ## OpenCensus + OpenTracing = OpenTelemetry
 
@@ -81,7 +83,7 @@ Observability에 필요한 telemetry 데이터(Logs, Metrics, Traces)를 계측(
 
 #### Simple Microservices
 
-![width:600px](img/simple.png) 
+![width:700px](img/simple.png) 
 
 ## Why OpenTelemetry?
 
@@ -89,23 +91,38 @@ Observability에 필요한 telemetry 데이터(Logs, Metrics, Traces)를 계측(
 
 ![width:600px](img/microservices.png) 
 
-## Context Propagation
+## Traces
 
-#### 서비스간 트레이스 전달 규약
-
-![width:700px](img/propagation.png) 
-
-## Trace, Span
-
-서비스 요청에 대한 애플리케이션 또는 서비스 구조 확인
-모든 서비스들 간 데이터 흐름을 시각화하여 아키텍처상의 병목 현상을 파악 
-
-**Trace** in OpenTelemetry are defined implicitly by their Spans
-**Span** represents an operation within a transaction.
+서비스 요청에 대한 애플리케이션 또는 서비스 구조 확인하고, 모든 서비스들 간 데이터 흐름을 시각화하여 아키텍처상의 병목 현상을 파악 
 
 ![width:750px](img/spans-traces.png)
 
-## Trace Context Propagation
+## Spans
+
+span의 핵심 기능은 호스트의 정보를 캡슐화하는것이다.  
+
+OpenTelemetry에서 span은 다양한 정보(timestamp, events, attributes, links, status)를 캡슐화(encapsulate).
+
+쉽게 설명하면 마이크로서비스에서 각각의 서비스를 span이라고 가정하면, span간 연결되는 점선을 trace의 context를 나타낸다. 각 context에는 프로세스 내부의 function 또는 RPC를 통해 전달되는 여러가지 정보들이 담겨있다. 
+
+span context 이외에도 뒤에서 설명할 trace와 span의 parent 식별자(id)와 prometheus와 유사하게 custom label로 process 및 request 관련 정보들을 담을수 있다.
+
+![width:750px](img/spans-traces.png)
+
+## Span in opentelemetry
+
+* Attribute : key-value pairs (filter 할 모든 데이터 예: customer identifier, process hostname)
+* Event : time-stamped string that can be attached to a span
+
+## Context Propagation
+
+
+
+#### 서비스간 트레이스 전달 규약 (W3C, Zipkin B3)
+
+![width:700px](img/propagation.png) 
+
+## Trace Context Propagation 
 [W3C standard for Context Propagation](https://www.w3.org/TR/trace-context/)
 
 ### version-format   = trace-id "-" parent-id "-" trace-flags
@@ -147,7 +164,7 @@ https://github.com/open-telemetry/opentelemetry-specification/blob/main/specific
 
 ![width:700px](img/collector.png)
 
-## Traces & Sampling
+## Sampling
 
 
 span과 메트릭에 key=value를 추가하게 되는데 이는 데이터를 수집하는데 있어서 비용 문제를 발생시킴
