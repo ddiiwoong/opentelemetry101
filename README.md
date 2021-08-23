@@ -99,6 +99,8 @@ Observability에 필요한 telemetry 데이터(Logs, Metrics, Traces)를 계측(
 
 ## Spans
 
+![width:750px](img/span.png)
+
 span의 핵심 기능은 호스트의 정보를 캡슐화하는것이다.  
 
 OpenTelemetry에서 span은 다양한 정보(timestamp, events, attributes, links, status)를 캡슐화(encapsulate).
@@ -115,8 +117,6 @@ span context 이외에도 뒤에서 설명할 trace와 span의 parent 식별자(
 * Event : time-stamped string that can be attached to a span
 
 ## Context Propagation
-
-
 
 #### 서비스간 트레이스 전달 규약 (W3C, Zipkin B3)
 
