@@ -292,14 +292,14 @@ management.endpoint.health.show-details=always
 pom.xml
 ```xml
 <dependency>
-     <groupId>io.opentelemetry</groupId>
-     <artifactId>opentelemetry-api</artifactId>
- </dependency>
-   
-  <dependency>
-     <groupId>io.opentelemetry</groupId>
-     <artifactId>opentelemetry-extension-annotations</artifactId>
- </dependency>
+  <groupId>io.opentelemetry</groupId>
+  <artifactId>opentelemetry-api</artifactId>
+</dependency>
+
+<dependency>
+  <groupId>io.opentelemetry</groupId>
+  <artifactId>opentelemetry-extension-annotations</artifactId>
+</dependency>
 ```
 
 ## Demo - Simple Java Application (Manual)
