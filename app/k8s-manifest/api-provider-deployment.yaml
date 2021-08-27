@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    service: boot-otel-tempo-provider1
+  name: boot-otel-tempo-provider1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      service: boot-otel-tempo-provider1
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      annotations:
+        prometheus.io/path: "/actuator/prometheus"
+        prometheus.io/port: "8090"
+        prometheus.io/scrape: "true"
+      labels:
+        service: boot-otel-tempo-provider1
+    spec:
+      containers:
+        - env:
+            - name: PROVIDER1_DB_PASS
+              value: postgrespassword
+            - name: PROVIDER1_DB_URL
+              value: jdbc:postgresql://provider1-db:5432/provider1
+            - name: PROVIDER1_DB_USER
+              value: postgres
+            - name: HOST_IP
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: status.hostIP
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: "http://$(HOST_IP):4317"
+
+          image: vaibhavjain882/boot-otel-tempo-provider1:agent
+          name: boot-otel-tempo-provider1
+          ports:
+            - containerPort: 8090
+          resources: {}
+      restartPolicy: Always
+
+

@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    service: boot-otel-tempo-api
+  name: boot-otel-tempo-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      service: boot-otel-tempo-api
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        service: boot-otel-tempo-api
+      annotations:
+        prometheus.io/path: "/actuator/prometheus"
+        prometheus.io/port: "8080"
+        prometheus.io/scrape: "true"
+    spec:
+      containers:
+        - env:
+            - name: PROVIDER1_URL_BASE
+              value: http://boot-otel-tempo-provider1:8090
+            - name: HOST_IP
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: status.hostIP
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: "http://$(HOST_IP):4317"
+
+          image: vaibhavjain882/boot-otel-tempo-api:agent
+          name: boot-otel-tempo-api
+          ports:
+            - containerPort: 8080
+          resources: {}
+      restartPolicy: Always
+

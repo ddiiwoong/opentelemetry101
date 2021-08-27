@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    service: boot-otel-tempo-provider1
+  name: boot-otel-tempo-provider1
+spec:
+  ports:
+    - name: "8090"
+      port: 8090
+      targetPort: 8090
+  type: ClusterIP
+  selector:
+    service: boot-otel-tempo-provider1
+

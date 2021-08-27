@@ -31,7 +31,15 @@ _class:
 
 # Getting Started with OpenTelemetry 
 
-NexCloud 김진웅
+김진웅 (넥스클라우드)
+
+## Who am I?
+
+- 김진웅
+- @ddiiwoong
+- NexCloud CPO (NexClipper Product)
+- Cloud Architect, Speaker, Translator
+- https://ddii.dev
 
 ## What is Observability?
 
@@ -42,7 +50,7 @@ NexCloud 김진웅
 
 * 원격측정(Telemetry) Data
   * Logs: 타임스탬프 메세지
-  * Metrics : key-value 키-밸류 태그를 가지는 집계/통계 데이터 (주로 Gauge, Counter, Histogram 등)
+  * Metrics : 키-밸류 태그를 가지는 집계/통계 데이터 (Gauge, Counter, Histogram 등)
   * Traces : 개별 Request가 전체 시스템에 전파(propagate)될 때 경로에 대한 기록  
 
 ## Distributed Trace (분산 추적)
@@ -75,7 +83,7 @@ Observability에 필요한 telemetry 데이터(Logs, Metrics, Traces)를 계측(
 
 ## Ecosystem
 
-- 지원 언어 - **Go**, **JavaScript**, **Java**, **Python**, Ruby, C++, Rus, PHP, etc...
+- 지원 언어 - **Go**, **JavaScript**, **Java**, **Python**, Ruby, C++, Rust, PHP, etc...
 - 호환 : Jaeger, Fluentbit, Prometheus, Kubernetes
 - 커뮤니티 주도
   - CSP : Azure, GCP, AWS
@@ -135,15 +143,6 @@ span context 이외에도 뒤에서 설명할 trace와 span의 parent 식별자(
 
 ![width:1050px](img/passing.png)
 
-## Terms
-- **Sampler** : always, probabilistic, etc.
-- **Span Processor** : simple, batch, etc.
-- **Exporter** : OTLP(OpenTelemetry protocol), Jaeger, Prometheus, etc.
-
-- API: Used to generate telemetry data. Defined per data source as well as for other aspects including baggage and propagators.
-- SDK: Implementation of the API with processing and exporting capabilities. Defined per data source as well as for other aspects including resources and configuration.
-- Data: Defines semantic conventions to provide vendor-agnostic implementations as well as the OpenTelemetry protocol (OTLP).
-
 ## Client Architecture
 
 #### Client Types
@@ -154,14 +153,88 @@ span context 이외에도 뒤에서 설명할 trace와 span의 parent 식별자(
 
 ## Collector Architecture
 
+![width:750px](img/collector.svg)
+
+## Collector Pipeline
+
 ![width:700px](img/collector.png)
 
+## Collector Receiver
+```yml
+receivers:
+  jaeger:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:14250
+      thrift_compact:
+        endpoint: 0.0.0.0:6831
+      thrift_http:
+        endpoint: 0.0.0.0:14268
+  zipkin:
+    endpoint: 0.0.0.0:9411
+  prometheus:
+  config:
+    scrape_configs:
+      - job_name: 'databases'
+        scrape_interval: 5s
+        static_configs:
+          - targets:
+              - database1dns:9091
+              - database2dns:9091
+```
+
+## Collector Processors
+```yml
+processors:
+  memory_limiter:
+    ballast_size_mib: 683
+    check_interval: 5s
+    limit_mib: 1336
+    spike_limit_mib: 341
+  batch:
+    send_batch_size: 1024
+    timeout: 5s
+  probabilistic_sampler:
+    hash_seed: 22
+    sampling_percentage: 15
+  filter:
+    metrics:
+      include:
+        match_type: regexp
+        metric_names:
+        - prefix/.*
+        - prefix_.*
+```
+
+## Collector Exporter
+```yml
+exporters:
+  file:
+    path: ./filename.json
+  jaeger:
+    endpoint: "http://jaeger-all-in-one:14250"
+    insecure: true
+  kafka:
+    protocol_version: 2.0.0
+  logging:
+    loglevel: debug
+  otlp:
+    endpoint: otelcol2:4317
+    insecure: true
+  prometheus:
+    endpoint: "prometheus:8889"
+    namespace: "default"
+  prometheusremotewrite:
+    endpoint: "http://some.url:9411/api/prom/push"
+  zipkin:
+    endpoint: "http://localhost:9411/api/v2/spans"
+```
 
 ## Collector Benefit
 
-- 단일 Exporter 형태로 관리 가능
-- Backend 선택 자유
-  - Prometheus or Stackdriver
+- Pipeline
+- Backend 선택 자유 (Exporters)
+  - Prometheus, logging, kafka, jaeger, zipkin
 - 운영의 용이성
   - Application 내 API key, TLS 관리 일원화 
 - 성능 (1 collector, 24 core, 48 GB)
@@ -171,19 +244,92 @@ span context 이외에도 뒤에서 설명할 trace와 span의 parent 식별자(
 
 ## Demo - Simple Java Application
 
-![width:900px](img/tempo.png)
+![width:900px](img/sample.png)
 
-## Demo - Observability Stack
+## Demo - Simple Java Application (Auto)
 
-![width:900px](img/tempo.png)
+pom.xml
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-actuator</artifactId>
+</dependency>
+ 
+<dependency>
+    <groupId>io.micrometer</groupId>
+    <artifactId>micrometer-registry-prometheus</artifactId>
+    <scope>runtime</scope>
+</dependency>
+```
 
-##
+## Demo - Environment 
 
-##
+Environment in Dockerfile
+```dockerfile
+ENV JAVA_OPTS "${JAVA_OPTS} \
+  -Dotel.trace.exporter=jaeger \
+  -Dotel.exporter.jaeger.endpoint=tempo:14250 \
+  -Dotel.metrics.exporter=none \
+  -Dotel.resource.attributes="service.name=${APP_NAME}" \
+  -Dotel.javaagent.debug=false \
+  -javaagent:${APP_HOME}/${OTEL_AGENT_JAR_FILE}"
+```
 
-##
+## Demo - Properties
 
-##
+application.properties
+```properties
+# JMX
+management.endpoints.web.exposure.include=*
+management.endpoints.web.exposure.include=prometheus,health,info,metric
+
+management.health.probes.enabled=true
+management.endpoint.health.show-details=always
+```
+
+## Demo - Simple Java Application (Manual)
+
+pom.xml
+```xml
+<dependency>
+     <groupId>io.opentelemetry</groupId>
+     <artifactId>opentelemetry-api</artifactId>
+ </dependency>
+   
+  <dependency>
+     <groupId>io.opentelemetry</groupId>
+     <artifactId>opentelemetry-extension-annotations</artifactId>
+ </dependency>
+```
+
+## Demo - Simple Java Application (Manual)
+
+```java
+public List<Flight> getFlights(String origin) {
+    LOGGER.info("Getting flights for {}", origin);
+    List<Flight> flights = this.flightClient.getFlights(origin);
+    doSomeWorkNewSpan();
+    return flights;
+}
+
+@WithSpan
+private void doSomeWorkNewSpan() {
+    LOGGER.info("Doing some work In New span");
+    Span span = Span.current();
+    span.setAttribute("attribute.a2", "some value");
+    span.addEvent("app.processing2.start", atttributes("321"));
+    span.addEvent("app.processing2.end", atttributes("321"));
+}
+
+private Attributes atttributes(String id) {
+    return Attributes.of(AttributeKey.stringKey("app.id"), id);
+}
+```
+## Demo - Simple Java Application
+
+Tracing
+
+![width:1180px](img/tempo.png)
 
 ## Sampling
 
@@ -204,27 +350,31 @@ span context 이외에도 뒤에서 설명할 trace와 span의 parent 식별자(
 예전에 opencensus에는 Always, Never, Probabilistic, RateLimiting 이렇게 있었는데 
 opentelemetry에는 확인이 필요함 -->
 
-## Why you need OpenTelemetry and what it can do
+## Benefits
 
-- A single, vendor-agnostic instrumentation library per language with support for both automatic and manual instrumentation.
-- A single collector binary that can be deployed in a variety of ways including as an agent or gateway.
-- Send data to multiple destinations in parallel through configuration.
-- Open-standard semantic conventions to ensure vendor-agnostic data collection
-- The ability to support multiple context propagation formats in parallel to assist with migrating as standards evolve.
-- With support for a variety of open-source and commercial protocols
-- Easy to adopt OpenTelemetry.(If you have experienced OpenTracing and OpenCensus projects)
-
-
-## What OpenTelemetry is not 
-
-- OpenTelemetry is not an observability back-end like Jaeger or Prometheus. 
-- Instead, it supports exporting data to a variety of open-source and commercial back-ends. 
-- It provides a pluggable architecture so additional technology protocols and formats can be easily added.
+- 벤더 중립적인 단일 계측 라이브러리 (자동 및 수동 계측 모두 지원)
+- 에이전트 또는 게이트웨이를 포함해 다양한 방법으로 배포할 수 있는 단일 Collector 바이너리
+- 환경 구성을 통해 데이터를 여러 대상에 병렬로 전송 가능
+- 데이터 수집을 보장하기 위한 개방형 표준 의미 규칙 (Open-standard semantic conventions)
+- 마이그레이션을 지원하기 위해 여러 컨텍스트 전파 형식을 병렬로 지원할 수 있습니다.
+- 다양한 오픈 소스 및 상용 프로토콜 지원
+- OpenTracing 및 OpenCensus 프로젝트를 경험한 경우 채택 용이
+- 플러그형 아키텍처로 추가 프로토콜과 포맷을 쉽게 추가 가능
 
 
+<!-- - OpenTelemetry는 Jaeger나 Prometheus와 같은 관측가능성 백엔드 플랫폼이 아닌 표준에 가깝다 -->
 
-## Specification
 
-- API: Used to generate telemetry data. Defined per data source as well as for other aspects including baggage and propagators.
-- SDK: Implementation of the API with processing and exporting capabilities. Defined per data source as well as for other aspects including resources and configuration.
-- Data: Defines semantic conventions to provide vendor-agnostic implementations as well as the OpenTelemetry protocol (OTLP).
+## References
+
+- https://ddii.dev/kubernetes/microservices-demo/
+- https://opentelemetry.io/docs/
+- https://w3c.github.io/trace-context/
+- https://w3c.github.io/baggage/
+- https://github.com/open-telemetry/opentelemetry-java#getting-started
+- https://github.com/open-telemetry/opentelemetry-java-instrumentation
+- https://github.com/open-telemetry/opentelemetry-java-contrib
+- https://github.com/open-telemetry/opentelemetry-specification
+- https://opentelemetry.lightstep.com/
+- https://reachmnadeem.wordpress.com/2021/03/04/observability-for-java-spring-based-applications-using-opentelemetry/
+

@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    service: provider1-db
+  name: provider1-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      service: provider1-db
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        service: provider1-db
+    spec:
+      containers:
+        - env:
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+            - name: POSTGRES_DB
+              value: provider1
+            - name: POSTGRES_PASSWORD
+              value: postgrespassword
+            - name: POSTGRES_USER
+              value: postgres
+          image: postgres
+          name: provider1-db
+          ports:
+            - containerPort: 5432
+          resources: {}
+          volumeMounts:
+            - mountPath: /var/lib/postgresql
+              name: provider1-db-claim
+            - mountPath: /docker-entrypoint-initdb.d/
+              name: provider1-db-init
+      restartPolicy: Always
+      volumes:
+        - name: provider1-db-claim
+          persistentVolumeClaim:
+            claimName: provider1-db-claim
+        - name: provider1-db-init
+          configMap:
+            name: provider1-db-init
+
